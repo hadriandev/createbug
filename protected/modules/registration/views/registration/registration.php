@@ -1,9 +1,10 @@
-<h1> <?php echo Yum::t('Registration'); ?> </h1>
 
-<?php $this->breadcrumbs = array(Yum::t('Registration')); ?>
+<h2> <? echo Yum::t('Registration'); ?> </h2>
+
+<? $this->breadcrumbs = array(Yum::t('Registration')); ?>
 
 <div class="form">
-<?php $activeform = $this->beginWidget('CActiveForm', array(
+<? $activeform = $this->beginWidget('CActiveForm', array(
 			'id'=>'registration-form',
 			'enableAjaxValidation'=>true,
 			'enableClientValidation'=>true,
@@ -11,64 +12,56 @@
 			));
 ?>
 
-<?php echo Yum::requiredFieldNote(); ?>
-<?php echo CHtml::errorSummary(array($form, $profile)); ?>
+<? echo Yum::requiredFieldNote(); ?>
+<? echo CHtml::errorSummary(array($form, $profile)); ?>
 
-<div class="row">
-<div class="span12"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($form,'username');
 echo $activeform->textField($form,'username');
-?> </div></div>
+?> </div>
 
-<div class="row">
-<div class="span12"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($profile,'email');
 echo $activeform->textField($profile,'email');
-?> </div></div>
+?> </div>  
 
-<div class="row"><div class="span12"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($profile,'firstname');
 echo $activeform->textField($profile,'firstname');
-?> </div></div>
+?> </div>  
 
-<div class="row"><div class="span12"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($profile,'lastname');
 echo $activeform->textField($profile,'lastname');
-?> </div></div>
+?> </div>  
 
 <div class="row">
-<div class="span12">
-<?php echo $activeform->labelEx($form,'password'); ?>
-<?php echo $activeform->passwordField($form,'password'); ?>
-</div>
+<? echo $activeform->labelEx($form,'password'); ?>
+<? echo $activeform->passwordField($form,'password'); ?>
 </div>
 
 <div class="row">
-<div class="span12">
-<?php echo $activeform->labelEx($form,'verifyPassword'); ?>
-<?php echo $activeform->passwordField($form,'verifyPassword'); ?>
-</div></div>
+<? echo $activeform->labelEx($form,'verifyPassword'); ?>
+<? echo $activeform->passwordField($form,'verifyPassword'); ?>
+</div>
 
-<?php if(extension_loaded('gd') 
+<? if(extension_loaded('gd') 
 			&& Yum::module('registration')->enableCaptcha): ?>
 	<div class="row">
-    	<div class="span12">
-		<?php echo CHtml::activeLabelEx($form,'verifyCode'); ?>
+		<? echo CHtml::activeLabelEx($form,'verifyCode'); ?>
 		<div>
-		<?php $this->widget('CCaptcha'); ?>
-		<?php echo CHtml::activeTextField($form,'verifyCode'); ?>
+		<? $this->widget('CCaptcha'); ?>
+		<? echo CHtml::activeTextField($form,'verifyCode'); ?>
 		</div>
 		<p class="hint">
-		<?php echo Yum::t('Please enter the letters as they are shown in the image above.'); ?>
-		<br/><?php echo Yum::t('Letters are not case-sensitive.'); ?></p>
-	</div></div>
-	<?php endif; ?>
+		<? echo Yum::t('Please enter the letters as they are shown in the image above.'); ?>
+		<br/><? echo Yum::t('Letters are not case-sensitive.'); ?></p>
+	</div>
+	<? endif; ?>
 	
 	<div class="row submit">
-    <div class="span12">
-		<?php echo CHtml::submitButton(Yum::t('Registration'), array('class'=>'btn')); ?>
-        </div>
+		<? echo CHtml::submitButton(Yum::t('Registration')); ?>
 	</div>
 
-<?php $this->endWidget(); ?>
+<? $this->endWidget(); ?>
 </div><!-- form -->

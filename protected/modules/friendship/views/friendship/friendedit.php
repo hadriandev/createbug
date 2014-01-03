@@ -1,4 +1,4 @@
-<?php
+<?
 $this->title = Yum::t(ucfirst($user->username) .'\'s friends');
 $this->breadcrumbs = array('Friends', $user->username);
 
@@ -17,28 +17,28 @@ $form=$this->beginWidget('CActiveForm', array(
 				'filter' => false,
 				'type'=>'raw',
 				'value'=>'CHtml::link(CHtml::encode($data->id),
-				array("//friendship/friendship/update"),"id"=>$data->id))',
+				array(Yum::route("friendship/update"),"id"=>$data->id))',
 			),
 			array(
 				'name'=>'inviter',
 				'filter' => false,
 				'type'=>'raw',
 				'value'=>'CHtml::link(CHtml::encode($data->inviter->username),
-				array("//friendship/friendship/update","id"=>$data->id))',
+				array(Yum::route("friendship/update"),"id"=>$data->id))',
 			),
 				array(
 				'name'=>'invited',
 				'filter' => false,
 				'type'=>'raw',
 				'value'=>'CHtml::link(CHtml::encode($data->invited->username),
-				array("//friendship/friendship/update","id"=>$data->id))',
+				array(Yum::route("friendship/update"),"id"=>$data->id))',
 			),
 			array(
 				'name'=>'status',
 				'filter' => false,
 				'type'=>'raw',
 				'value'=>'CHtml::link(CHtml::encode($data->getStatus()),
-				array("friendship/friendship/update","id"=>$data->id))',
+				array(Yum::route("friendship/update"),"id"=>$data->id))',
 			),
 			
 			array(

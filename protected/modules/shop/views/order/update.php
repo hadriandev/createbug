@@ -1,11 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	Shop::t('Orders')=>array('index'),
+	'Orders'=>array('index'),
 	$model->order_id=>array('view','id'=>$model->order_id),
-	Shop::t('Update status'),
+	Yii::t('ShopModule.shop', 'Update'),
 );
 
 ?>
-<h2> <?php echo Shop::t('Update status of Order'); echo $model->order_id; ?></h2>
+<h1> <?php echo Yii::t('ShopModule.shop', 'Update Order '); echo $model->order_id; ?></h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

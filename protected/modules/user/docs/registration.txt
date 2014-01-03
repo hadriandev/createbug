@@ -64,34 +64,34 @@ We change the registration.php to look something like this:
 
 <p> Hi there, please enter your E-Mail address and drop a note about you </p>
 
-<?php $this->breadcrumbs = array(Yum::t('Registration')); ?>
+<? $this->breadcrumbs = array(Yum::t('Registration')); ?>
 
 <div class="form">
-<?php $activeform = $this->beginWidget('CActiveForm', array(
+<? $activeform = $this->beginWidget('CActiveForm', array(
 			'id'=>'registration-form',
 			'enableAjaxValidation'=>false,
 			'focus'=>array($profile,'email'),
 			));
 ?>
 
-<?php echo Yum::requiredFieldNote(); ?>
-<?php echo CHtml::errorSummary($profile); ?>
+<? echo Yum::requiredFieldNote(); ?>
+<? echo CHtml::errorSummary($profile); ?>
 
-<div class="row"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($profile,'email');
 echo $activeform->textArea($profile,'email');
 ?> </div>  
 
-<div class="row"> <?php
+<div class="row"> <?
 echo $activeform->labelEx($profile,'about');
 echo $activeform->textArea($profile,'about');
 ?> </div>  
 	
 <div class="row submit">
-	<?php echo CHtml::submitButton(Yum::t('Registration')); ?>
+	<? echo CHtml::submitButton(Yum::t('Registration')); ?>
 </div>
 
-<?php $this->endWidget(); ?>
+<? $this->endWidget(); ?>
 
 3.) Changing the Controller Behavior
 
@@ -104,7 +104,7 @@ override the actionRegistration() of your Controller like this:
 		if (isset($_POST['Profile'])) { 
 			$profile->attributes = $_POST['YumProfile'];
 
-			if($profile->save()) {
+			if($profile->save())
 				$user = new YumUser;
 				$password = YumUser::generatePassword();
 				$user->register(md5($profile->email), $password, $profile, $user->generateSalt());
@@ -117,8 +117,7 @@ override the actionRegistration() of your Controller like this:
 		$this->render('registration', array(
 					'profile' => $profile,
 					)
-				);
-		}
+				);  
 	}
 
 Now, we also need to override the sendRegistrationEmail method, because we want to include the clear-text password in the email:

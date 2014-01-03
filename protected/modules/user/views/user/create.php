@@ -1,11 +1,12 @@
 <?php
-$this->title = Yum::t("Create user");
-$this->pageTitle = Yum::t("Create user");
 $this->breadcrumbs = array(
-		Yum::t('Users') => array('index'),
-		Yum::t('Create'));
-
+    Yum::t('Users') => array('index'),
+    Yum::t('Create'));
+?>
+<h1><?php echo Yum::t('Create User'); ?></h1>
+<?php
 echo $this->renderPartial('_form', array(
-			'user'=>$user,
-			'passwordform'=>$passwordform,
-			'profile'=>isset($profile) ? $profile : null)); ?>
+    'model' => $model,
+    'passwordform' => $passwordform,
+    'profile' => isset($profile) ? $profile : null));
+?>

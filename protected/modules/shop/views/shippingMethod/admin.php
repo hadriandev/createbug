@@ -1,12 +1,17 @@
 <?php
 $this->breadcrumbs=array(
-	Shop::t('Shipping methods')=>array('index'),
-	Shop::t('Manage'),
+	'Shipping Methods'=>array('index'),
+	'Manage',
+);
+
+$this->menu=array(
+	array('label'=>'List ShippingMethod', 'url'=>array('index')),
+	array('label'=>'Create ShippingMethod', 'url'=>array('create')),
 );
 
 ?>
 
-<h2> <?php echo Shop::t('Shipping methods'); ?></h2>
+<h1>Manage Shipping Methods</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'shipping-method-grid',
@@ -14,16 +19,11 @@ $this->breadcrumbs=array(
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'weight_range',
 		'title',
-		'tax.percent',
+		'tax_id',
 		'price',
 		array(
 			'class'=>'CButtonColumn',
 		),
 	),
-));
-
-echo Chtml::link(Shop::t('Create new shipping method'), array(
-			'//shop/shippingMethod/create')); 
-?>
+)); ?>

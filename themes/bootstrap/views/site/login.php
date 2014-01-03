@@ -13,10 +13,6 @@ $this->breadcrumbs=array(
 
 <p>Please fill out the following form with your login credentials:</p>
 
-<?php //$this->widget('application.modules.hybridauth.widgets.renderProviders'); ?>
-<br><br><br><br>
-<?php $this->widget('application.modules.user.components.LoginWidget'); ?>
-
 <div class="form">
 
 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(

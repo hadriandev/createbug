@@ -1,17 +1,18 @@
 <?php
 $this->breadcrumbs=array(
-	Shop::t('Product Specifications')=>array('index'),
+	'Product Specifications'=>array('index'),
 	$model->title=>array('view','id'=>$model->id),
 	'Update',
 );
 
 $this->menu=array(
-	array('label'=>Shop::t('Create Product specification'), 'url'=>array('create')),
-	array('label'=>Shop::t('View Product specification'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Shop::t('Manage Product specifications'), 'url'=>array('admin')),
+	array('label'=>'List ProductSpecification', 'url'=>array('index')),
+	array('label'=>'Create ProductSpecification', 'url'=>array('create')),
+	array('label'=>'View ProductSpecification', 'url'=>array('view', 'id'=>$model->id)),
+	array('label'=>'Manage ProductSpecification', 'url'=>array('admin')),
 );
 ?>
 
-<h2><?php echo $model->title; ?></h2>
+<h1>Update ProductSpecification <?php echo $model->id; ?></h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

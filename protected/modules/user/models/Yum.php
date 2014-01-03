@@ -1,8 +1,7 @@
-<?php
+<?
 /**
  * Helper class
  * @author tomasz.suchanek@gmail.com
- * @author thyseus@gmail.com
  * @since 0.6
  * @package Yum.core
  *
@@ -113,8 +112,7 @@ class Yum
 
 		if($messages===false) {
 			if(Yum::module()->avoidSql) {
-				$translations = YumTranslation::model()->findAll(
-						'category = :category and language = :language', array(
+				$translations = YumTranslation::model()->findAll('category = :category and language = :language', array(
 							'category' =>  $category,
 							'language' =>  $language,
 							));
@@ -152,6 +150,39 @@ class Yum
 
 	public static function hasModule($module) {
 		return array_key_exists($module, Yii::app()->modules);
+	}
+
+	/**
+	 * Parses url for predefined symbols and returns real routes
+	 * Following symbols are allowed:
+	 *  - {yum} - points to base path of Yum
+	 *  - {users} - points to user controller 
+	 *  - {messsages} - points to base messages module
+	 *  - {roles} - points to base roles module
+	 *  - {profiles} - points to base profile module
+	 * @param string $url
+	 * @since 0.6
+	 * @return string 
+	 */
+	public static function route($url)
+	{
+		$yumBaseRoute=Yum::module()->yumBaseRoute;
+		$tr=array();
+		$tr['{yum}']=$yumBaseRoute;
+		$tr['{messages}']=$yumBaseRoute.'/messages';
+		$tr['{roles}']=$yumBaseRoute.'/role';
+		$tr['{profiles}']=$yumBaseRoute.'/profiles';
+		$tr['{user}']=$yumBaseRoute.'/user';
+		if(is_array($url))
+		{
+			$ret=array();
+			foreach($url as $k=>$entry)
+				$ret[$k]=strtr($entry,$tr);
+			return $ret;
+		}
+		else
+			return strtr($url,$tr);
+
 	}
 
 	/**

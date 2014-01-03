@@ -1,10 +1,4 @@
 <?php
-if(!$model) {
-	echo Shop::t('Invalid payment method'); 
-
-	return false;
-}
-
 if(!isset($this->breadcrumbs))
 	$this->breadcrumbs=array(
 			Shop::t('Payment Methods')=>array('index'),

@@ -1,4 +1,4 @@
-<?php
+<?
 /**
  * This function implements the RESTful Api features of yii-user-management
  * @since 0.8rc2 
@@ -118,7 +118,7 @@ class YumRestController extends CController
 			$this->_sendResponse(200, CJSON::encode($result));
 	}
 
-	public function actionList($mode) {
+	public function actionList($model) {
 		switch($mode)
 		{
 			case 'users':

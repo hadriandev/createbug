@@ -5,9 +5,6 @@ $this->renderPartial('/order/waypoint', array('point' => 3));
 if(!isset($customer))
 	$customer = new Customer;
 
-if($customer->address === NULL)
-	$this->redirect(array('//shop/customer/create'));
-
 	if(!isset($billingAddress))
 		if(isset($customer->billingAddress))
 			$billingAddress = $customer->billingAddress;
@@ -33,7 +30,6 @@ $form=$this->beginWidget('CActiveForm', array(
 			'data'=>$customer->address,
 			'htmlOptions' => array('class' => 'detail-view'),
 			'attributes'=>array(
-				'title',
 				'firstname',
 				'lastname',
 				'street',
@@ -48,9 +44,8 @@ $form=$this->beginWidget('CActiveForm', array(
 echo CHtml::checkBox('toggle_billing',
 			$customer->billingAddress !== NULL, array(
 				'style' => 'float: left')); 
-echo CHtml::label(Shop::t('alternative billing address'),
-		'toggle_billing', array(
-			'style' => 'cursor:pointer'));
+	echo CHtml::label(Shop::t('alternative billing address'), 'toggle_billing', array(
+				'style' => 'cursor:pointer'));
 ?>
 <div class="form">
 	<fieldset id="billing_information" style="display: none;" >
@@ -59,12 +54,6 @@ echo CHtml::label(Shop::t('alternative billing address'),
         	<h3> <?php echo Shop::t('new payment address'); ?> </h3>
             <p><?php echo Shop::t('Shipping new address'); ?></p>
         
-            <div class="row">
-                <?php echo $form->labelEx($billingAddress,'title'); ?>
-                <?php echo $form->textField($billingAddress,'title',array('size'=>45,'maxlength'=>45)); ?>
-                <?php echo $form->error($billingAddress,'title'); ?>
-            </div>
-
             <div class="row">
                 <?php echo $form->labelEx($billingAddress,'firstname'); ?>
                 <?php echo $form->textField($billingAddress,'firstname',array('size'=>45,'maxlength'=>45)); ?>
@@ -92,39 +81,40 @@ echo CHtml::label(Shop::t('alternative billing address'),
                 <?php echo $form->error($billingAddress,'city'); ?>
             </div>
         
-				
             <div class="row">
-							<?php echo Shop::getCountryChooser($form, $billingAddress); ?>	
+				<?php echo $form->labelEx($billingAddress,'country'); ?>
+                <?php echo $form->textField($billingAddress,'country',array('size'=>45,'maxlength'=>45)); ?>
+                <?php echo $form->error($billingAddress,'country'); ?>
             </div>
 		</div>
-   </fieldset>
+     </fieldset>
 <br />
 <hr />  
 <h3> <?php echo Shop::t('Payment method'); ?> </h3>
 <p> <?php echo Shop::t('Choose your Payment method'); ?> </p>
 
+
 <?php
 $i = 0;
-	echo '<fieldset>';
 foreach(PaymentMethod::model()->findAll() as $method) {
 	echo '<div class="row">';
 	echo CHtml::radioButton("PaymentMethod", $i == 0, array(
 				'value' => $method->id));
-	echo CHtml::tag('p', array(
-				'class' => 'shop_selection',
-				'onClick' => "
-				$(\"input[name='PaymentMethod'][value='".$method->id."']\").attr('checked','checked');"),
-			$method->title . '<br />'.$method->description);
+	echo '<div class="float-left">';
+	echo CHtml::label($method->title, 'PaymentMethod');
+	echo CHtml::tag('p', array(), $method->description);
+	echo '</div>';
 	echo '</div>';
 	echo '<div class="clear"></div>';
 	$i++;
 }
-	echo '</fieldset>';
 	?>
 
 
 <div class="row buttons">
-<?php echo CHtml::submitButton(Shop::t('Continue'),array('id'=>'next')); ?>
+<?php
+echo CHtml::submitButton(Shop::t('Continue'),array('id'=>'next'));
+?>
 </div>
 
 <?php

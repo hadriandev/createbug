@@ -3,19 +3,19 @@
 class ProductsController extends Controller
 {
 	public $_model;
-	public $pageTitle;
+
 
 	public function filters()
 	{
 		return array(
-				'accessControl',
-				);
+			'accessControl',
+		);
 	}	
 
 	public function accessRules() {
 		return array(
 				array('allow',
-					'actions'=>array('view', 'index', 'getVariations'),
+					'actions'=>array('view', 'index'),
 					'users' => array('*'),
 					),
 				array('allow',
@@ -23,61 +23,9 @@ class ProductsController extends Controller
 					'users' => array('admin'),
 					),
 				array('deny',  // deny all other users
-					'users'=>array('*'),
-					),
+						'users'=>array('*'),
+						),
 				);
-	}
-
-	// This method returns a set of variations that is possible for a given
-	// product. This is used in the Image Upload Widget as a ajax response,
-	// for example.
-	public function actionGetVariations() {
-		if(Yii::app()->request->isAjaxRequest && isset($_POST['product'])) {
-			$product = Products::model()->findByPk($_POST['product']); 
-			echo CHtml::hiddenField('product_id', $product->product_id);
-
-			if($variations = $product->getVariations()) {
-				foreach($variations as $variation) {
-					$field = "Variations[{$variation[0]->specification_id}][]";
-					
-					echo '<div class="shop-variation-element">';
-					
-					echo '<strong>'.CHtml::label($variation[0]->specification->title.'</strong>',
-							$field, array(
-								'class' => 'lbl-header'));
-
-					if($variation[0]->specification->required)
-						echo ' <span class="required">*</span>';
-
-					echo '<br />';
-
-					if($variation[0]->specification->input_type == 'textfield') {
-						echo CHtml::textField($field);
-					} else if ($variation[0]->specification->input_type == 'select'){
-
-						// If the specification is required, preselect the first field.
-						// Otherwise  let the customer choose which one to pick
-						// 	$product->variationCount > 1 ? true : false means, that the
-						// widget should display the _absolute_ price if only 1 variation
-						// is available, otherwise the relative (+ X $)
-						echo CHtml::radioButtonList($field,
-								$variation[0]->specification->required 
-								? $variation[0]->id 
-								: null,
-								ProductVariation::listData($variation, 
-									$product->variationCount > 1 ? true : false
-									), array(
-										'template' => '{input} {label}',
-										'separator' =>'<div class="clear"></div>',
-										));
-					} 
-					echo '</div>';
-				}
-			}
-
-		} else
-			throw new CHttpException(404);
-
 	}
 
 	public function beforeAction($action) {
@@ -87,54 +35,42 @@ class ProductsController extends Controller
 
 	public function actionView()
 	{
-		$model = $this->loadModel();
-
-		if($model && $model->status != 1)
-			throw new CHttpException(404);
-
-		$this->render(Shop::module()->productView,array(
-					'model'=>$model,
-					));
+		$this->render('view',array(
+			'model'=>$this->loadModel(),
+		));
 	}
 
 	public function actionCreate()
 	{
-		$model = new Products;
+		$model=new Products;
 
-		$this->layout = Shop::module()->adminLayout;
-
-		// We assume we want to create a _active_ product
-		if(!isset($model->status))
-			$model->status = 1;
-
-		$this->performAjaxValidation($model);
+		 $this->performAjaxValidation($model);
 
 		if(isset($_POST['Products']))
 		{
-			$model->attributes = $_POST['Products'];
+			$model->attributes=$_POST['Products'];
 			if(isset($_POST['Specifications']))
 				$model->setSpecifications($_POST['Specifications']);
 
+
 			if($model->save())
-				$this->redirect(array('admin'));
+				$this->redirect(array('shop/admin'));
 		}
 
 		$this->render('create',array(
-					'model'=>$model,
-					));
+			'model'=>$model,
+		));
 	}
 
 	public function actionUpdate($id, $return = null)
 	{
-		$this->layout = Shop::module()->adminLayout;
 		$model=$this->loadModel();
 
 		$this->performAjaxValidation($model);
 
 		if(isset($_POST['Products']))
 		{
-			$model->attributes = $_POST['Products'];
-
+			$model->attributes=$_POST['Products'];
 			if(isset($_POST['Specifications']))
 				$model->setSpecifications($_POST['Specifications']);
 			if(isset($_POST['Variations']))
@@ -148,8 +84,8 @@ class ProductsController extends Controller
 		}
 
 		$this->render('update',array(
-					'model'=>$model,
-					));
+			'model'=>$model,
+		));
 	}
 
 	/**
@@ -176,13 +112,11 @@ class ProductsController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider = new CActiveDataProvider('Products', array(
-					'criteria' => array(
-						'condition' => 'status = 1')));
+		$dataProvider = new CActiveDataProvider('Products');
 
 		$this->render('index',array(
-					'dataProvider'=>$dataProvider,
-					));
+			'dataProvider'=>$dataProvider,
+		));
 	}
 
 	/**
@@ -190,14 +124,13 @@ class ProductsController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$this->layout = Shop::module()->adminLayout;
 		$model=new Products('search');
 		if(isset($_GET['Products']))
 			$model->attributes=$_GET['Products'];
 
 		$this->render('admin',array(
-					'model'=>$model,
-					));
+			'model'=>$model,
+		));
 	}
 
 	/**
@@ -210,14 +143,9 @@ class ProductsController extends Controller
 		{
 			if(isset($_GET['id']))
 				$this->_model=Products::model()->findbyPk($_GET['id']);
-			if(isset($_GET['title']))
-				$this->_model=Products::model()->find('title = :title', array(
-							':title' => $_GET['title']));
 			if($this->_model===null)
 				throw new CHttpException(404,'The requested page does not exist.');
 		}
-
-
 		return $this->_model;
 	}
 

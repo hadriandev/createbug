@@ -4,7 +4,6 @@ $this->breadcrumbs=array(
 		Shop::t('Orders')=>array('index'),
 		$model->order_id,
 		);
-Shop::renderFlash();
 
 ?>
 
@@ -17,24 +16,14 @@ Shop::renderFlash();
 			'attributes'=>array(
 				'order_id',
 				'customer_id',
-				'comment',
-				array(
-					'label' => Shop::t('Ordering Date'),
-					'value' => date('d. m. Y G:i',$model->ordering_date)
+					array(
+						'label' => Shop::t('Ordering Date'),
+						'value' => date('d. m. Y G:i',$model->ordering_date)
 					),
-				array(
-					'label' => Shop::t('Status'),
-					'value' => Shop::t($model->status), 
-					)
-				)
-			)
-		); 
-
-	if( (Shop::module()->useWithYum && Yii::app()->user->isAdmin()) 
-			|| Yii::app()->user->id == 1)
-	echo CHtml::link(Shop::t('Update order status'), array(
-				'//shop/order/update', 'id' => $model->order_id )); 
-	?>
+				'ordering_done',
+				'ordering_confirmed',
+				),
+			)); ?>
 
 <h3> <?php echo Shop::t('Customer Info'); ?> </h3>
 
@@ -50,7 +39,6 @@ Shop::renderFlash();
 <?php $this->widget('zii.widgets.CDetailView', array(
 			'data'=>$model->deliveryAddress,
 			'attributes'=>array(
-				'title',
 				'firstname',
 				'lastname',
 				'street',
@@ -67,7 +55,6 @@ Shop::renderFlash();
 			'data'=>$model->billingAddress,
 			'attributes'=>array(
 				'firstname',
-				'title',
 				'lastname',
 				'street',
 				'zipcode',
@@ -79,37 +66,46 @@ Shop::renderFlash();
 
 <?php 
 $this->renderPartial('/paymentMethod/view', array(
-			'model' => $model->paymentMethod)); 
+	'model' => $model->paymentMethod)); 
 $this->renderPartial('/shippingMethod/view', array(
-			'model' => $model->shippingMethod)); 
+	'model' => $model->shippingMethod)); 
 ?>
 
 
 <h3> <?php echo Shop::t('Ordered Products'); ?> </h3>
 
-<?php 
-if($model->positions)
-	foreach($model->positions as $position) {
-		$this->renderPartial('position', array(
-					'position' => $position));
-	}
+<?php foreach($model->products as $product) {
+	$this->widget('zii.widgets.CDetailView', array(
+				'data'=>$product,
+				'attributes'=> array(
+					'product.title',
+					'amount',
+					array(
+						'label' => Shop::t('Specifications'),
+						'type' => 'raw',
+						'value' => $product->renderSpecifications())
+					)
+				)
+			); 
+	echo '<br />';
+	echo '<hr />';
+}
 
-die("jo");
 ?>
 
 <div style="clear:both;"> </div>
 
-<ul class="buttons">
-<li> <?php echo CHtml::link(Shop::t('Update order status'), array(
-			'//shop/order/update', 'id' => $model->order_id ));  ?> </li>
+<div class="buttons"> 
+<?php
 
-<li> <?php echo CHtml::link(Shop::t('Delivery slip'), array(
-			'//shop/order/slip', 'id' => $model->order_id )); ?>  </li>
+echo CHtml::link(Shop::t('Delivery slip'), array(
+			'//shop/order/slip', 'id' => $model->order_id )); 
 
-<li> <?php echo CHtml::link(Shop::t('Invoice'), array(
-			'//shop/order/invoice', 'id' => $model->order_id)); ?>  </li>
+echo CHtml::link(Shop::t('Invoice'), array(
+			'//shop/order/invoice', 'id' => $model->order_id)); 
 
-<li> <?php echo CHtml::link(Shop::t('Back to Orders'), array(
-			'//shop/order/admin')); ?>  </li>
+echo CHtml::link(Shop::t('Back to Orders'), array(
+			'//shop/order/admin')); 
 
-</ul>
+?>
+</div>

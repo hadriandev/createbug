@@ -55,8 +55,6 @@ class ShippingMethodController extends Controller
 		if(isset($_POST['ShippingMethod']))
 		{
 			$model->attributes=$_POST['ShippingMethod'];
-			if(isset($_POST['ShippingMethod']['id']))
-				$model->id = $_POST['ShippingMethod']['id'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -66,11 +64,14 @@ class ShippingMethodController extends Controller
 		));
 	}
 
-	public function actionUpdate()
+	/**
+	 * Updates a particular model.
+	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * @param integer $id the ID of the model to be updated
+	 */
+	public function actionUpdate($id)
 	{
-		$id = $_GET['id'];
-
-		$model=$this->loadModel($id['id'], $id['weight_range']);
+		$model=$this->loadModel($id);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -78,11 +79,8 @@ class ShippingMethodController extends Controller
 		if(isset($_POST['ShippingMethod']))
 		{
 			$model->attributes=$_POST['ShippingMethod'];
-			if(isset($_POST['ShippingMethod']['id']))
-				$model->id = $_POST['ShippingMethod']['id'];
-
 			if($model->save())
-				$this->redirect(array('admin'));
+				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -95,10 +93,17 @@ class ShippingMethodController extends Controller
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete()
+	public function actionDelete($id)
 	{
 		if(Yii::app()->request->isPostRequest)
-			$this->loadModel($_GET['id']['id'], $_GET['id']['weight_range'])->delete();
+		{
+			// we only allow deletion via POST request
+			$this->loadModel($id)->delete();
+
+			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+			if(!isset($_GET['ajax']))
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
@@ -116,7 +121,6 @@ class ShippingMethodController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$this->layout = Shop::module()->adminLayout;
 		$model=new ShippingMethod('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['ShippingMethod']))
@@ -127,20 +131,16 @@ class ShippingMethodController extends Controller
 		));
 	}
 
-	public function loadModel($id, $weight_range = null)
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
+	 */
+	public function loadModel($id)
 	{
-		if($weight_range)
-			$model=ShippingMethod::model()->find(
-					'id = :id and weight_range = :weight_range', array(
-						':id' => $id,
-						':weight_range' => $weight_range));
-		else
-			$model=ShippingMethod::model()->find(
-					'id = :id', array(
-						':id' => $id));
-
+		$model=ShippingMethod::model()->findByPk((int)$id);
 		if($model===null)
-			throw new CHttpException(404,'The requested shipping Method does not exist.');
+			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
 

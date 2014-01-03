@@ -1,154 +1,128 @@
-<?php
-$form = new CForm(array(
-			'elements'=>array(
-				'username'=>array(
-					'type'=>'text',
-					'maxlength'=>32,
-					),
-				'password'=>array(
-					'type'=>'password',
-					'maxlength'=>32,
-					),
-				'rememberMe'=>array(
-					'type'=>'checkbox',
-					)
-				),
+<?
+if (!isset($model))
+    $model = new YumUserLogin();
 
-			'buttons'=>array(
-				'login'=>array(
-					'type'=>'submit',
-					'label'=>'Login',
-					),
-				),
-			), $model);
-?>
+$module = Yum::module();
 
-<?php
-
-//if($module->loginType & UserModule::LOGIN_BY_FACEBOOK)
-//{
-//    $fbconfig = Yum::module()->facebookConfig;
-//    if(isset($fbconfig))
-//    {
-//        Yii::import('application.modules.user.vendors.facebook.*');
-//        require_once('Facebook.php');
-//        $facebook = new Facebook($fbconfig);
-//        Yii::app()->session['fb_state'] = md5(uniqid(rand(), TRUE));
-//        $loginUrl = $facebook->getLoginUrl(array(
-//                'state' => Yii::app()->session['fb_state'],
-//                'scope' => 'email'
-//            ));
-//        echo "<a href='" . $loginUrl. "'>Login with Facebook</a><br />";
-//    }
-//}
-
-?>
-
-
-<?php
 $this->pageTitle = Yum::t('Login');
-$this->title = Yum::t('Login');
-$this->breadcrumbs=array(Yum::t('Login'));
+if (isset($this->title))
+    $this->title = Yum::t('Login');
+$this->breadcrumbs = array(Yum::t('Login'));
 
-echo CHtml::beginForm(array('//user/auth/login'));  
+Yum::renderFlash();
+?>
 
-if(isset($_GET['action']))
-	echo CHtml::hiddenField('returnUrl', urldecode($_GET['action']));
+<?php
+
+if($module->loginType & UserModule::LOGIN_BY_FACEBOOK)
+{
+    $fbconfig = Yum::module()->facebookConfig;
+    if(isset($fbconfig))
+    {
+        Yii::import('application.modules.user.vendors.facebook.*');
+        require_once('Facebook.php');
+        $facebook = new Facebook($fbconfig);
+        Yii::app()->session['fb_state'] = md5(uniqid(rand(), TRUE));
+        $loginUrl = $facebook->getLoginUrl(array(
+                'state' => Yii::app()->session['fb_state'],
+                'scope' => 'email'
+            ));
+        echo "<a href='" . $loginUrl. "'>Login with Facebook</a><br />";
+    }
+}
 
 ?>
 
 <div class="form">
+    <p>
+        <?
+        echo Yum::t(
+                'Please fill out the following form with your login credentials:');
+        ?>
+    </p>
 
-<?php if($model->hasErrors()) { ?>
-<div class="alert">
-<?php echo CHtml::errorSummary($model); ?>
-</div>
-<?php } ?>
+    <? echo CHtml::beginForm(array('//user/auth/login')); ?>
 
+    <?
+    if (isset($_GET['action']))
+        echo CHtml::hiddenField('returnUrl', urldecode($_GET['action']));
+    ?>
 
-<div class="span5 loginform">
-<p> <?php echo Yum::t(
-		'Please fill out the following form with your login credentials:'); ?> </p>
+<? echo CHtml::errorSummary($model); ?>
 
-<div class="row">
-	<?php 
-if(Yum::module()->loginType & UserModule::LOGIN_BY_USERNAME)
-	echo CHtml::activeLabelEx($model,'username'); 
-if(Yum::module()->loginType & UserModule::LOGIN_BY_EMAIL)
-	printf ('<label for="YumUserLogin_username">%s <span class="required">*</span></label>', Yum::t('E-Mail address')); 
-	?>
+    <div class="row">
+        <?
+        if ($module->loginType & UserModule::LOGIN_BY_USERNAME
+                || $module->loginType & UserModule::LOGIN_BY_LDAP)
+            echo CHtml::activeLabelEx($model, 'username');
+        if ($module->loginType & UserModule::LOGIN_BY_EMAIL)
+            printf('<label for="YumUserLogin_username">%s <span class="required">*</span></label>', Yum::t('E-Mail address'));
+        if ($module->loginType & UserModule::LOGIN_BY_OPENID)
+            printf('<label for="YumUserLogin_username">%s <span class="required">*</span></label>', Yum::t('OpenID username'));
+        ?>
 
-		<?php echo CHtml::activeTextField($model,'username') ?>
-</div>
+<? echo CHtml::activeTextField($model, 'username') ?>
+    </div>
 
-<div class="row">
-		<?php echo CHtml::activeLabelEx($model,'password'); ?>
-		<?php echo CHtml::activePasswordField($model,'password'); ?>
-</div>
+    <div class="row">
+        <? echo CHtml::activeLabelEx($model, 'password'); ?>
+        <?
+        echo CHtml::activePasswordField($model, 'password');
+        if ($module->loginType & UserModule::LOGIN_BY_OPENID)
+            echo '<br />' . Yum::t('When logging in with OpenID, password can be omitted');
+        ?>
 
-<?php if ($model->scenario == 'captcha' && CCaptcha::checkRequirements()) { ?>
-	<div class="row">
-		<?php echo CHtml::activeLabel($model, 'verifyCode'); ?>
-			<div>
-				<?php $this->widget('CCaptcha'); ?>
-				<?php echo CHtml::activeTextField($model, 'verifyCode'); ?>
-		</div>
-		<?php echo CHtml::error($model, 'verifyCode'); ?>
-	</div>
-<?php } ?>
+    </div>
 
+    <div class="row">
+        <p class="hint">
+            <?
+            if (Yum::hasModule('registration') && Yum::module('registration')->enableRegistration)
+                echo CHtml::link(Yum::t("Registration"), Yum::module('registration')->registrationUrl);
+            if (Yum::hasModule('registration')
+                    && Yum::module('registration')->enableRegistration
+                    && Yum::module('registration')->enableRecovery)
+                echo ' | ';
+            if (Yum::hasModule('registration')
+                    && Yum::module('registration')->enableRecovery)
+                echo CHtml::link(Yum::t("Lost password?"), Yum::module('registration')->recoveryUrl);
+            ?>
+        </p>
+    </div>
 
-</div>
-		
-<?php if(Yum::module()->loginType & UserModule::LOGIN_BY_HYBRIDAUTH 
-		&& Yum::module()->hybridAuthProviders) { ?>
-	<div class="span5 hybridauth">
-<?php echo Yum::t('You can also login by') . ': <br />'; 
-foreach(Yum::module()->hybridAuthProviders as $provider) 
-	echo CHtml::link(
-			CHtml::image(
-				Yii::app()->getAssetManager()->publish(
-					Yii::getPathOfAlias(
-						'application.modules.user.assets.images').'/'.strtolower($provider).'.png'),
-				$provider) . $provider, $this->createUrl(
-					'//user/auth/login', array('hybridauth' => $provider)), array(
-					'class' => 'social')) . '<br />'; 
+    <div class="row rememberMe">
+        <? echo CHtml::activeCheckBox($model, 'rememberMe', array('style' => 'display: inline;')); ?>
+<? echo CHtml::activeLabelEx($model, 'rememberMe', array('style' => 'display: inline;')); ?>
+    </div>
+
+    <div class="row submit">
+<? echo CHtml::submitButton(Yum::t('Login')); ?>
+    </div>
+
+<? echo CHtml::endForm(); ?>
+</div><!-- form -->
+
+<?
+$form = new CForm(array(
+            'elements' => array(
+                'username' => array(
+                    'type' => 'text',
+                    'maxlength' => 32,
+                ),
+                'password' => array(
+                    'type' => 'password',
+                    'maxlength' => 32,
+                ),
+                'rememberMe' => array(
+                    'type' => 'checkbox',
+                )
+            ),
+            'buttons' => array(
+                'login' => array(
+                    'type' => 'submit',
+                    'label' => 'Login',
+                ),
+            ),
+                ), $model);
 ?>
-</div>
-
-<div class="clearfix"></div>
-
-<?php } ?>
-
-<div class="span10">
-<div class="row">
-	<p class="hint">
-	<?php 
-	if(Yum::hasModule('registration') && Yum::module('registration')->enableRegistration)
-	echo CHtml::link(Yum::t("Registration"),
-			Yum::module('registration')->registrationUrl);
-	if(Yum::hasModule('registration') 
-			&& Yum::module('registration')->enableRegistration
-			&& Yum::module('registration')->enableRecovery)
-	echo ' | ';
-	if(Yum::hasModule('registration') 
-			&& Yum::module('registration')->enableRecovery) 
-	echo CHtml::link(Yum::t("Lost password?"),
-			Yum::module('registration')->recoveryUrl);
-	?>
-</p>
-
-</div>
-
-
-<div class="row">
-<div class="buttons">
-<?php echo CHtml::submitButton(Yum::t('Login'), array('class' => 'btn')); ?>
-</div>
-
-</div>
-</div>
-</div>
-
-<?php echo CHtml::endForm(); ?>
 

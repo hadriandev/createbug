@@ -20,18 +20,16 @@ if($variations = $model->getVariations()) {
 			echo ' <span class="required">*</span>';
 
 		echo  '<br />';
-		if($variation[0]->specification->input_type == 'textfield') {
+		if($variation[0]->specification->is_user_input) {
 			echo CHtml::textField($field);
-		} else if ($variation[0]->specification->input_type == 'select'){
+		}
+		else {
 			// If the specification is required, preselect the first field. Otherwise
 			// let the customer choose which one to pick
 			echo CHtml::radioButtonList($field,
 					$variation[0]->specification->required ? $variation[0]->id : null,
 					ProductVariation::listData($variation));
-		} else if ($variation[0]->specification->input_type == 'image'){
-			echo CHtml::fileField($field);
 		}
-
 		echo '</div>';
 		if($i % 2 == 0)
 			echo '<div style="clear: both;"></div>';

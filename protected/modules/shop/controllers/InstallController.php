@@ -4,7 +4,6 @@ class InstallController extends Controller
 {
 	public function actionInstall() 
 	{
-		$this->layout = '';
 		if($this->module->debug) 
 		{
 			if(Yii::app()->request->isPostRequest) 
@@ -46,7 +45,7 @@ class InstallController extends Controller
 						$sql = "CREATE TABLE IF NOT EXISTS `".$specificationTable."` (
 							`id` int(11) NOT NULL AUTO_INCREMENT,
 							`title` varchar(255) NOT NULL,
- 							`input_type` enum('none', 'select','textfield','image') NOT NULL DEFAULT 'select',
+							`is_user_input` tinyint(1),
 							`required` tinyint(1),
 							PRIMARY KEY (`id`)
 								) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
@@ -59,7 +58,6 @@ class InstallController extends Controller
 							`position` int(11) NOT NULL,
 							`title` varchar(255) NOT NULL,
 							`price_adjustion` float NOT NULL,
-							`weight_adjustion` float NOT NULL,
 							PRIMARY KEY (`id`)
 								) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
 
@@ -81,18 +79,16 @@ class InstallController extends Controller
 
 						$sql = "CREATE TABLE IF NOT EXISTS `".$shippingMethodTable."` (
 							`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-							`weight_range` varchar(255) NOT NULL,
 							`title` varchar(255) NOT NULL,
 							`description` text NULL,
 							`tax_id` int(11) NOT NULL,
 							`price` double NOT NULL,
-							PRIMARY KEY (`id`, `weight_range`)
+							PRIMARY KEY (`id`)
 								) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
 
 						$db->createCommand($sql)->execute();
-						$sql = "INSERT INTO `shop_shipping_method` (`id`, `weight_range`, `title`, `description`, `tax_id`, `price`) VALUES
-							(1, '1-5','Delivery by postal Service', 'We deliver by Postal Service. 2.99 units of money are charged for that', 1, 2.99),
-							(1, '5-10','Delivery by postal Service', 'We deliver by Postal Service. 2.99 units of money are charged for that', 1, 2.99);";
+						$sql = "INSERT INTO `shop_shipping_method` (`id`, `title`, `description`, `tax_id`, `price`) VALUES
+							(1, 'Delivery by postal Service', 'We deliver by Postal Service. 2.99 units of money are charged for that', 1, 2.99);";
 
 						$db->createCommand($sql)->execute();
 
@@ -116,6 +112,10 @@ class InstallController extends Controller
 
 						$db->createCommand($sql)->execute();
 
+
+
+
+
 						// Create Category Table
 						$sql = "CREATE TABLE IF NOT EXISTS `".$categoryTable."` (
 							`category_id` INT NOT NULL AUTO_INCREMENT ,
@@ -129,14 +129,12 @@ class InstallController extends Controller
 						$db->createCommand($sql)->execute();
 
 						// Create Products Table
-						$sql = "CREATE TABLE IF NOT EXISTS `".$productsTable."` (
+						$sql = "CREATE  TABLE IF NOT EXISTS `".$productsTable."` (
 							`product_id` INT NOT NULL AUTO_INCREMENT ,
 							`category_id` INT NOT NULL ,
-							`status` int(10) NOT NULL ,
 							`tax_id` INT NOT NULL ,
 							`title` VARCHAR(45) NOT NULL ,
 							`description` TEXT NULL ,
-							`keywords` varchar(255) NULL ,
 							`price` VARCHAR(45) NULL ,
 							`language` VARCHAR(45) NULL ,
 							`specifications` TEXT NULL ,
@@ -149,17 +147,18 @@ class InstallController extends Controller
 								ON UPDATE NO ACTION)
 								ENGINE = InnoDB;";
 
+
 						$db->createCommand($sql)->execute();
 
+
 						// Create Customer Table
-						$sql = "CREATE TABLE IF NOT EXISTS   `".$customerTable."` (
+						$sql = "CREATE  TABLE IF NOT EXISTS   `".$customerTable."` (
 							`customer_id` INT NOT NULL AUTO_INCREMENT ,
 							`user_id` INT NULL ,
 							`address_id` INT NOT NULL ,
 							`delivery_address_id` INT NOT NULL ,
 							`billing_address_id` INT NOT NULL ,
 							`email` VARCHAR(45) NOT NULL ,
-							`phone` VARCHAR(255) NOT NULL ,
 							PRIMARY KEY (`customer_id`) )
 								ENGINE = InnoDB;";
 
@@ -174,9 +173,6 @@ class InstallController extends Controller
 							`delivery_address_id` INT NOT NULL ,
 							`billing_address_id` INT NOT NULL ,
 							`ordering_date` INT NOT NULL ,
-							`delivery_date` INT NOT NULL ,
-							`delivery_time` INT NOT NULL ,
-							`status` enum('new', 'in_progress', 'done', 'cancelled') NOT NULL DEFAULT 'new',
 							`ordering_done` TINYINT(1) NULL ,
 							`ordering_confirmed` TINYINT(1) NULL ,
 							`payment_method` INT NOT NULL ,
@@ -206,7 +202,6 @@ class InstallController extends Controller
 
 						$sql = "CREATE TABLE IF NOT EXISTS `".$addressTable."` (
 							`id` int(11) NOT NULL AUTO_INCREMENT,
-							`title` varchar(255) NOT NULL,
 							`firstname` varchar(255) NOT NULL,
 							`lastname` varchar(255) NOT NULL,
 							`street` varchar(255) NOT NULL,
@@ -288,12 +283,12 @@ class InstallController extends Controller
 							";
 							$db->createCommand($sql)->execute();
 							$sql = "
-								INSERT INTO `shop_product_specification` (`id`, `title`, `input_type`, `required`) VALUES
-								(1, 'Weight', 'None', 1),
-								(2, 'Color', 'select', 0),
-								(3, 'Some random attribute', 'None', 0),
-								(4, 'Material', 'None', 1),
-								(5, 'Specific number', 'textfield', 1);
+								INSERT INTO `shop_product_specification` (`id`, `title`, `is_user_input`, `required`) VALUES
+								(1, 'Size', 0, 1),
+								(2, 'Color', 0, 0),
+								(3, 'Some random attribute', 0, 0),
+								(4, 'Material', 0, 1),
+								(5, 'Specific number', 1, 1);
 							";
 							$db->createCommand($sql)->execute();
 						$sql = "SET FOREIGN_KEY_CHECKS=1;";

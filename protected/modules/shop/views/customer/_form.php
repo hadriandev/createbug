@@ -18,12 +18,6 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->hiddenField($customer, 'user_id', array('value'=> Yii::app()->user->id)); ?>
 
 	<div class="row">
-		<?php echo $form->labelEx($address,'title'); ?>
-		<?php echo $form->dropDownList($address,'title',Shop::module()->titleOptions); ?>
-		<?php echo $form->error($address,'title'); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->labelEx($address,'firstname'); ?>
 		<?php echo $form->textField($address,'firstname',array('size'=>45,'maxlength'=>45)); ?>
 		<?php echo $form->error($address,'firstname'); ?>
@@ -42,20 +36,13 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($customer,'phone'); ?>
-		<?php echo $form->textField($customer,'phone',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($customer,'phone'); ?>
-	</div>
-
-
-	<div class="row">
 		<?php echo $form->labelEx($address,'street'); ?>
 		<?php echo $form->textField($address,'street',array('size'=>45,'maxlength'=>45)); ?>
 		<?php echo $form->error($address,'street'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($address,'zip_city'); ?> 
+		<?php echo $form->labelEx($address,'city'); ?>
 		<?php echo $form->textField($address,'zipcode',array('size'=>10,'maxlength'=>45)); ?>
 		<?php echo $form->error($address,'zipcode'); ?>
 
@@ -64,44 +51,17 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 
 	<div class="row">
-		<?php echo Shop::getCountryChooser($form, $address); ?>	
+		<?php echo $form->labelEx($address,'country'); ?>
+		<?php echo $form->textField($address,'country',array('size'=>45,'maxlength'=>45)); ?>
+		<?php echo $form->error($address,'country'); ?>
 	</div>
-
-	<?php if(Shop::module()->useWithYum && $customer->isNewRecord) { ?>
-
-	<?php echo CHtml::label(Shop::t('Register an account'), 'register'); ?>
-	<?php echo CHtml::checkbox('register', true); ?>
-
-	<div class="registration">
-	<?php echo Shop::t('Enter a password to create an user account'); ?>
-	<div class="row">
-		<?php echo $form->labelEx($customer,'password'); ?>
-		<?php echo $form->passwordField($customer,'password',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($customer,'password'); ?>
-	</div>
-
-<div class="row">
-		<?php echo $form->labelEx($customer,'passwordRepeat'); ?>
-		<?php echo $form->passwordField($customer,'passwordRepeat',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($customer,'passwordRepeat'); ?>
-	</div>
-	</div>
-
-	<?php Yii::app()->clientScript->registerScript('registration', "
-			$('#register').click(function() { 
-				$('.registration').toggle(500);
-				});
-			") ?>
-
-
-	<?php } ?>
 
 	<div style="clear: both;"> </div>
 
 	<div class="row buttons">
 	<?php echo CHtml::submitButton($customer->isNewRecord 
-			? Shop::t('Register') 
-			: Shop::t('Save')
+			? Yii::t('ShopModule.shop', 'Register') 
+			: Yii::t('ShopModule.shop', 'Save')
 			,array('id'=>'next')
 			); ?>
 	</div>

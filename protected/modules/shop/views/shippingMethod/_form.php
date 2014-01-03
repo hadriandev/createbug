@@ -8,18 +8,6 @@
 	<?php echo $form->errorSummary($model); ?>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'id'); ?>
-		<?php echo $form->textField($model,'id',array('size'=>5,'maxlength'=>10)); ?>
-		<?php echo $form->error($model,'id'); ?>
-	</div>
-
-	<div class="row">
-	<?php echo $form->labelEx($model,'weight_range'); ?>
-	<?php echo $form->textField($model,'weight_range',array('size'=>10,'maxlength'=>255)); ?>
-	<?php echo $form->error($model,'weight_range'); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->labelEx($model,'title'); ?>
 		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>255)); ?>
 		<?php echo $form->error($model,'title'); ?>
@@ -34,8 +22,7 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'tax_id'); ?>
-		<?php echo $form->dropDownList($model,'tax_id', 
-				CHtml::listData(Tax::model()->findAll(), 'id', 'title')); ?>
+		<?php echo $form->textField($model,'tax_id'); ?>
 		<?php echo $form->error($model,'tax_id'); ?>
 	</div>
 

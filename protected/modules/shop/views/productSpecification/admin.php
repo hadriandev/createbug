@@ -1,11 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	'Product Specifications'=>array('admin'),
+	'Product Specifications'=>array('index'),
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>Shop::t('Specifications'), 'url'=>array('admin')),
+	array('label'=>Shop::t('Specifications'), 'url'=>array('index')),
 	array('label'=>Shop::t('New Specification'), 'url'=>array('create')),
 );
 
@@ -19,10 +19,8 @@ $this->menu=array(
 	'filter'=>$model,
 	'columns'=>array(
 		'title',
-		'input_type',
-		array(
-			'name' => 'required',
-			'value' => '$data->required ? Shop::t("Yes") : Shop::t("No")'),
+		'is_user_input',
+		'required',
 		array(
 			'class'=>'CButtonColumn',
 		),

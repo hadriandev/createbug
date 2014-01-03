@@ -1,4 +1,4 @@
-<?php
+<?
 Yii::setPathOfAlias('RegistrationModule' , dirname(__FILE__));
 
 class RegistrationModule extends CWebModule {
@@ -17,13 +17,10 @@ class RegistrationModule extends CWebModule {
 	// Whether to confirm the activation of an user by email
 	public $enableActivationConfirmation = true; 
 
+	public $validEmailPattern = '/^[A-Za-z0-9@.\s,]+$/u';
+
 	public $registrationEmail='register@website.com';
 	public $recoveryEmail='restore@website.com';
-
-	// Which roles should be assigned automatically to a fresh registered user?
-	// Use role id, for example array(1,4,5)  
-	public $defaultRoles = array();
-	public $defaultHybridAuthRoles = array();
 
 	public $registrationView = '/registration/registration';
 	public $changePasswordView = 
@@ -38,7 +35,6 @@ class RegistrationModule extends CWebModule {
 	public $enableCaptcha = true;
 
 	public $loginAfterSuccessfulActivation = false;
-	public $loginAfterSuccessfulRecovery = false;
 
 	public $controllerMap=array(
 			'registration'=>array(

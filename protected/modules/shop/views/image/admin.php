@@ -8,12 +8,12 @@ $this->breadcrumbs=array(
 
 <div id="shopcontent">
 
-<h2> 
+<h1> 
 <?php 
 echo Yii::t('ShopModule.shop', 'Images for'); 
 echo '&nbsp;' . $product->title; 
 ?>
-</h2>
+</h1>
 
 <?php
 if($images)

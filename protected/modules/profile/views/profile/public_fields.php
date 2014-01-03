@@ -1,13 +1,14 @@
-<?php if($profile && !$profile->isNewRecord && $profile->getProfileFields()) { ?>
+<? if($profile && !$profile->isNewRecord && $profile->getPublicFields()) { ?>
 <table class="table_profile_fields">
-<?php foreach($profile->getProfileFields() as $field) { ?>
+<? foreach($profile->getPublicFields() as $field) { ?>
+
 	<tr>
-	<th class="label"> <?php echo Yum::t($field); ?> </th> 
-	<td> <?php echo $profile->$field; ?> </td>
+	<th class="label"> <? echo Yum::t($field->title); ?> </th> 
+	<td> <? echo $profile->{$field->varname}; ?> </td>
 	</tr>
 
-<?php } ?>
+<? } ?>
 </table>
-<?php } ?>
+<? } ?>
 
 <div class="clear"></div>

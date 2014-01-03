@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * This is the model class for table "shop_product_variation".
+ *
+ * The followings are the available columns in table 'shop_product_variation':
+ * @property integer $id
+ * @property integer $product_id
+ * @property integer $specification_id
+ * @property string $title
+ * @property double $price_adjustion
+ */
 class ProductVariation extends CActiveRecord
 {
 	/**
@@ -11,51 +21,23 @@ class ProductVariation extends CActiveRecord
 		return parent::model($className);
 	}
 
-	/**
-	 * If $price_absolute is set to true, display the absolute price in 
-	 * brackets (25 $), otherwise the relative price (+ 5 $)
-	 */
-	public static function listData($variations, $price_absolute = false) {
+	public static function listData($variations) {
 		$var = array();
 
-		foreach($variations as $id => $variation)  {
-			if($price_absolute)
-				$var[$variation->id] = sprintf(
-						'<div class="variation">%s</div> <div class="price">%s</div>',
-						$variation->title,
-						Shop::priceFormat(
-							$variation->product->getPrice() + $variation->getPriceAdjustion()));
+		foreach($variations as $id => $variation) 
+			if($variation->price_adjustion == 0) 
+				$var[$variation->id] = sprintf('%s', $variation->title);
 			else
-				$var[$variation->id] = sprintf(
-						'<div class="variation">%s</div> <div class="price">%s%s</div>',
+				$var[$variation->id] = sprintf('%s (%s%s)',
 						$variation->title,
 						$variation->price_adjustion > 0 ? '+' : '',
-						Shop::priceFormat($variation->getPriceAdjustion()));
-		}
+						Shop::priceFormat($variation->price_adjustion));
 
 		return $var;
 	}
 
-	public function getVariations() {
-		return ProductVariation::model()->findAll('product_id = :pid and specification_id = :sid ', array(
-					':pid' => $this->product_id,
-					':sid' => $this->specification_id,
-					));	
-	}
-
 	public function __toString() {
 		return $this->title;
-	}
-
-	public function getWeightAdjustion($gross = true) {
-			return $this->getAttribute('weight_adjustion');
-	}
-
-	public function getPriceAdjustion($gross = true) {
-		if($gross)
-			return $this->price_adjustion *= (@$this->product->tax->percent / 100) + 1;
-		else
-			return $this->price_adjustion;
 	}
 
 	/**
@@ -74,14 +56,14 @@ class ProductVariation extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-				array('product_id, specification_id, title, price_adjustion, position', 'required'),
-				array('product_id, specification_id', 'numerical', 'integerOnly'=>true),
-				array('price_adjustion', 'numerical'),
-				array('title', 'length', 'max'=>255),
-				// The following rule is used by search().
-				// Please remove those attributes that should not be searched.
-				array('id, product_id, specification_id, title, price_adjustion', 'safe', 'on'=>'search'),
-				);
+			array('product_id, specification_id, title, price_adjustion, position', 'required'),
+			array('product_id, specification_id', 'numerical', 'integerOnly'=>true),
+			array('price_adjustion', 'numerical'),
+			array('title', 'length', 'max'=>255),
+			// The following rule is used by search().
+			// Please remove those attributes that should not be searched.
+			array('id, product_id, specification_id, title, price_adjustion', 'safe', 'on'=>'search'),
+		);
 	}
 
 	/**
@@ -90,9 +72,9 @@ class ProductVariation extends CActiveRecord
 	public function relations()
 	{
 		return array(
-				'product' => array(self::BELONGS_TO, 'Products', 'product_id'),
-				'specification' => array(self::BELONGS_TO, 'ProductSpecification', 'specification_id'),
-				);
+			'product' => array(self::BELONGS_TO, 'Products', 'product_id'),
+			'specification' => array(self::BELONGS_TO, 'ProductSpecification', 'specification_id'),
+		);
 	}
 
 	/**
@@ -101,12 +83,12 @@ class ProductVariation extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-				'id' => 'ID',
-				'product_id' => 'Product',
-				'specification_id' => 'Specification',
-				'title' => 'Title',
-				'price_adjustion' => 'Price Adjustion',
-				);
+			'id' => 'ID',
+			'product_id' => 'Product',
+			'specification_id' => 'Specification',
+			'title' => 'Title',
+			'price_adjustion' => 'Price Adjustion',
+		);
 	}
 
 	/**
@@ -127,7 +109,7 @@ class ProductVariation extends CActiveRecord
 		$criteria->compare('price_adjustion',$this->price_adjustion);
 
 		return new CActiveDataProvider(get_class($this), array(
-					'criteria'=>$criteria,
-					));
+			'criteria'=>$criteria,
+		));
 	}
 }

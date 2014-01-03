@@ -11,50 +11,9 @@ class ShoppingCartController extends Controller
 						));
 	}
 
-	public function beforeAction($action) {
-		$this->layout = Shop::module()->layout;
-		return parent::beforeAction($action);
-	}
-
-	public function actionUpdateVariation() {
-		if(Yii::app()->request->isAjaxRequest && isset($_POST)) {
-			$cart = Shop::getCartContent();
-			$pieces = explode('_', key($_POST));
-
-			$position = $pieces[1];
-			$variation = $pieces[2];
-			$new_value = $_POST[key($_POST)];
-
-			$cart[$position]['Variations'][$variation] = $new_value;
-
-			if(Shop::setCartContent($cart)) {
-				$product = Products::model()->findByPk($cart[$position]['product_id']);
-				echo Shop::priceFormat(
-						@$product->getPrice($cart[$position]['Variations'], $cart[$position]['amount'] ));
-			} else throw new CHttpException(500);
-		}
-	}
-
-	public function actionGetPriceSingle($position) {
-		$cart = Shop::getCartContent();
-		$product_id = $cart[$position]['product_id'];
-		if($product = Products::model()->findByPk($product_id))
-			if(Yii::app()->request->isAjaxRequest)
-				echo Shop::priceFormat(
-						$product->getPrice($cart[$position]['Variations'], 1));
-			else
-				return Shop::priceFormat(
-						$product->getPrice($cart[$position]['Variations'], 1));
-	}
-
 	public function actionGetPriceTotal() {
 		echo Shop::getPriceTotal();
 	}
-
-	public function actionGetShippingCosts() {
-		echo Shop::getShippingMethod(true);
-	}
-
 
 	public function actionUpdateAmount() {
 		$cart = Shop::getCartContent();
@@ -88,10 +47,8 @@ class ShoppingCartController extends Controller
 			$this->redirect(array( 
 							'//shop/products/view', 'id' => $_POST['product_id']));
 		}
-
 		if(isset($_POST['Variations']))
 			foreach($_POST['Variations'] as $key => $variation) {
-			
 				$specification = ProductSpecification::model()->findByPk($key);
 				if($specification->required && $variation[0] == '') {
 					Shop::setFlash(Shop::t('Please select a {specification}', array(
@@ -100,20 +57,8 @@ class ShoppingCartController extends Controller
 								'//shop/products/view', 'id' => $_POST['product_id']));
 				}
 
-			}
-
-		if(isset($_FILES)) {
-			foreach($_FILES as $variation) {
-				$target = Shop::module()->uploadedImagesFolder . '/' . $variation['name'];
-				if($variation['tmp_name'] == '') {
-					Shop::setFlash(Shop::t('Please select a image from your hard drive'));
-					$this->redirect(array('//shop/shoppingCart/view'));
-				}
-					
-				if(move_uploaded_file($variation['tmp_name'], $target))
-					$_POST['Variations']['image'] = $target;
-			}
 		}
+
 
 		$cart = Shop::getCartContent();
 
@@ -127,7 +72,7 @@ class ShoppingCartController extends Controller
 	
 		Shop::setCartcontent($cart);
 		Shop::setFlash(Shop::t('The product has been added to the shopping cart'));
-		$this->redirect(array('//shop/shoppingCart/view'));
+		$this->redirect(array('//shop/products/index'));
 	}
 
 	public function actionDelete($id)

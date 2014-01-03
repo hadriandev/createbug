@@ -1,4 +1,4 @@
-<?php
+<?
 
 /* This file handles a example registration process logic and some of the
  * most used functions for Registration and Activation. It is recommended to
@@ -13,12 +13,6 @@ Yii::import('application.modules.registration.models.*');
 
 class YumRegistrationController extends YumController {
 	public $defaultAction = 'registration';
-
-	// override this with a custom text or function that retrieves a custom text
-	public $textActivationSubject =  
-		'Please activate your account for {username}';
-	public $textActivationBody =  
-		'Hello, {username}. Please activate your account with this url: {activation_url}';
 
 	// Only allow the registration if the user is not already logged in and
 	// the function is activated in the Module Configuration
@@ -68,7 +62,7 @@ class YumRegistrationController extends YumController {
 	 * user/docs/registration.txt
 	 */
 	public function actionRegistration() {
-		// When we override the registrationUrl, this one is not valid anymore!
+		// When we overrie the registrationUrl, this one is not valid anymore!
 		if(Yum::module('registration')->registrationUrl != array(
 					'//registration/registration/registration'))
 			throw new CHttpException(403);
@@ -82,14 +76,13 @@ class YumRegistrationController extends YumController {
 		if (isset($_POST['YumRegistrationForm'])) { 
 			$form->attributes = $_POST['YumRegistrationForm'];
 			$profile->attributes = $_POST['YumProfile'];
-
+                        
 			$form->validate();
 			$profile->validate();
 
 			if(!$form->hasErrors() && !$profile->hasErrors()) {
 				$user = new YumUser;
 				$user->register($form->username, $form->password, $profile);
-				$user->profile = $profile;
 
 				$this->sendRegistrationEmail($user);
 				Yum::setFlash('Thank you for your registration. Please check your email.');
@@ -112,18 +105,20 @@ class YumRegistrationController extends YumController {
 
 		$activation_url = $user->getActivationUrl();
 
-		$body = strtr($this->textActivationBody, array(
+		$body = strtr(
+				'Hello, {username}. Please activate your account with this url: {activation_url}', array(
 					'{username}' => $user->username,
 					'{activation_url}' => $activation_url));
 
-		$mail = array(
-				'from' => Yum::module('registration')->registrationEmail,
-				'to' => $user->profile->email,
-				'subject' => strtr($this->textActivationSubject, array(
-						'{username}' => $user->username)),
-				'body' => $body,
-				);
-		$sent = YumMailer::send($mail);
+			$mail = array(
+					'from' => Yum::module('registration')->registrationEmail,
+					'to' => $user->profile->email,
+					'subject' => strtr(
+						'Please activate your account for {username}', array(
+							'{username}' => $user->username)),
+					'body' => $body,
+					);
+			$sent = YumMailer::send($mail);
 
 		return $sent;
 	}
@@ -173,28 +168,16 @@ class YumRegistrationController extends YumController {
 			if($profile = YumProfile::model()->find('email = :email', array(
 							'email' =>  $email))) {
 				$user = $profile->user;
-				if($user->status <= 0)
-					throw new CHttpException(403, 'User is not active');
-				else if($user->activationKey == $key) {
+				if($user->activationKey == $key) {
 					$passwordform = new YumUserChangePassword;
 					if (isset($_POST['YumUserChangePassword'])) {
 						$passwordform->attributes = $_POST['YumUserChangePassword'];
 						if ($passwordform->validate()) {
-							$user->setPassword($passwordform->password);
-							$user->activationKey = CPasswordHelper::hashPassword(
-									microtime() . $passwordform->password,
-									Yum::module()->passwordHashCost);
+							$user->password = YumEncrypt::encrypt($passwordform->password, $user->salt);
+							$user->activationKey = YumEncrypt::encrypt(microtime() . $passwordform->password, $user->salt);
 							$user->save();
 							Yum::setFlash('Your new password has been saved.');
-							if(Yum::module('registration')->loginAfterSuccessfulRecovery) {
-								$login = new YumUserIdentity($user->username, false); 
-								$login->authenticate(true);
-								Yii::app()->user->login($login);
-								$this->redirect(Yii::app()->homeUrl);
-							}
-							else {
-								$this->redirect(Yum::module()->loginUrl);
-							}
+							$this->redirect(Yum::module()->loginUrl);
 						}
 					}
 					$this->render(
@@ -215,9 +198,10 @@ class YumRegistrationController extends YumController {
 				$form->attributes = $_POST['YumPasswordRecoveryForm'];
 
 				if ($form->validate()) {
+					Yum::setFlash(
+							'Instructions have been sent to you. Please check your email.');
+
 					if($form->user instanceof YumUser) {
-						if($form->user->status <= 0)	
-							throw new CHttpException(403, 'User is not active');
 						$form->user->generateActivationKey();
 						$recovery_url = $this->createAbsoluteUrl(
 								Yum::module('registration')->recoveryUrl[0], array(
@@ -230,17 +214,15 @@ class YumRegistrationController extends YumController {
 										'{recovery_url}' => $recovery_url,
 										'{username}' => $form->user->username)));
 
-						$mail = array(
-								'from' => Yii::app()->params['adminEmail'],
-								'to' => $form->user->profile->email,
-								'subject' => 'You requested a new password',
-								'body' => strtr(
-									'You have requested a new password. Please use this URL to continue: {recovery_url}', array(
-										'{recovery_url}' => $recovery_url)),
-								);
-						$sent = YumMailer::send($mail);
-						Yum::setFlash(
-								'Instructions have been sent to you. Please check your email.');
+							$mail = array(
+									'from' => Yii::app()->params['adminEmail'],
+									'to' => $form->user->profile->email,
+									'subject' => 'You requested a new password',
+									'body' => strtr(
+										'You have requested a new password. Please use this URL to continue: {recovery_url}', array(
+											'{recovery_url}' => $recovery_url)),
+									);
+							$sent = YumMailer::send($mail);
 					} else
 						Yum::log(Yum::t(
 									'A password has been requested, but no associated user was found in the database. Requested user/email is: {username}', array(

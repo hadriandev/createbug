@@ -1,5 +1,4 @@
 <?php 
-
 function renderVariation($variation, $i) { 
 	if(!ProductSpecification::model()->findByPk(1))
 		return false;
@@ -17,121 +16,61 @@ function renderVariation($variation, $i) {
 	$str .= '</td> <td>';
 	$str .= CHtml::textField("Variations[{$i}][title]", $variation->title); 
 	$str .= '</td> <td>';
-
-	// Price adjustion
-	$str .= CHtml::dropDownList("Variations[{$i}][sign_price]",
+	$str .= CHtml::dropDownList("Variations[{$i}][sign]",
 			$variation->price_adjustion >= 0 ? '+' : '-', array(
 				'+' => '+',
 				'-' => '-'));
 	$str .= '</td> <td>';
-	$str .= CHtml::textField("Variations[{$i}][price_adjustion]",
-			abs($variation->price_adjustion),
-			array('size' => 5));  
-
-	// Weight adjustion
-	$str .= '</td> <td>';
-	$str .= CHtml::dropDownList("Variations[{$i}][sign_weight]",
-			$variation->weight_adjustion >= 0 ? '+' : '-', array(
-				'+' => '+',
-				'-' => '-'));
-	$str .= '</td> <td>';
-	$str .= CHtml::textField(
-			"Variations[{$i}][weight_adjustion]", abs($variation->weight_adjustion),
-			array('size' => 5));  
+	$str .= CHtml::textField("Variations[{$i}][price_adjustion]", abs($variation->price_adjustion));  
 	$str .= '</td> <td>';
 	for($j = -10; $j <= 10; $j++)
 		$positions[$j] = $j;
 	$str .= CHtml::dropDownList("Variations[{$i}][position]",
 			$variation->position,
 			$positions);
-	$str .= '</td></tr>';
+	$str .= '</td> </tr>';
 
 return $str;
 } ?>
 <div class="form">
 
-<?php
-if(Shop::module()->rtepath !== false) {
-	Yii::app()->clientScript->registerScriptFile(Shop::module()->rtepath, CClientScript::POS_HEAD); 
-	Yii::app()->clientScript->registerScript("ckeditor", "$('#Products_description').ckeditor();");
-}
-if(Shop::module()->rteadapter !== false)
-	Yii::app()->clientScript->registerScriptFile(Shop::module()->rteadapter, CClientScript::POS_HEAD); 
-
-
- $form=$this->beginWidget('CActiveForm', array(
+<?php $form=$this->beginWidget('CActiveForm', array(
 			'id'=>'products-form',
 			'enableAjaxValidation'=>true,
-			'htmlOptions' => array(
-				'enctype' => $model->hasUpload() 
-				? 'multipart/form-data' 
-				: 'x-www-form-urlencoded'
-				)
 			)); ?>
 
 <?php echo $form->errorSummary($model); ?>
 
+<div style="float: left;">
 <fieldset>
 <legend> <?php echo Shop::t('Article Information'); ?> </legend>
-
-<div class="row">
-<?php echo $form->labelEx($model,'title'); ?>
-<?php echo $form->textField($model,'title',array(
-			'size'=>45,'maxlength'=>45)); ?>
-<?php echo $form->error($model,'title'); ?>
-</div>
-
-<div class="row">
-<?php echo $form->labelEx($model,'status'); ?>
-<?php echo $form->dropDownList($model, 'status', array(
-			0 => Shop::t('Inactive'),
-			1 => Shop::t('Active'))); ?>
-<?php echo $form->error($model,'status'); ?>
-</div>
-
 <div class="row">
 <?php echo $form->labelEx($model,'category_id'); ?>
 <?php $this->widget('application.modules.shop.components.Relation', array(
 			'model' => $model,
 			'relation' => 'category',
 			'fields' => 'title',
-			'showAddButton' => false,
-		)); ?>
+			'showAddButton' => false)); ?>
 <?php echo $form->error($model,'category_id'); ?>
 </div>
 
 <div class="row">
-<?php echo $form->labelEx($model,'tax_id'); ?>
-<?php $this->widget('application.modules.shop.components.Relation', array(
-			'model' => $model,
-			'relation' => 'tax',
-			'fields' => 'title',
-			'showAddButton' => false,
-		)); ?>
-<?php echo $form->error($model,'category_id'); ?>
+<?php echo $form->labelEx($model,'title'); ?>
+<?php echo $form->textField($model,'title',array('size'=>45,'maxlength'=>45)); ?>
+<?php echo $form->error($model,'title'); ?>
 </div>
-
-
 
 <div class="row">
 <?php echo $form->labelEx($model,'description'); ?>
 <?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
 <?php echo $form->error($model,'description'); ?>
 </div>
-
-<div class="row">
-<?php echo $form->labelEx($model,'keywords'); ?>
-<?php echo $form->textField($model,'keywords',array(
-			'size'=>45,'maxlength'=>255)); ?>
-<?php echo $form->error($model,'keywords'); ?>
-</div>
-
 </fieldset>
-
+</div>
 
 
 <fieldset>
-<legend> <?php echo Shop::t('Article Specifications'); ?> </legend>
+<legend> <?php echo Yii::t('ShopModule.shop', 'Article Specifications'); ?> </legend>
 
 <div class="row">
 <?php echo $form->labelEx($model,'price'); ?>
@@ -156,11 +95,10 @@ if(Shop::module()->rteadapter !== false)
 
 <table>
 		<?php 
-		printf('<tr><th>%s</th><th>%s</th><th colspan = 2>%s</th><th colspan = 2>%s</th><th>%s</th></tr>',
+		printf('<tr><th>%s</th><th>%s</th><th colspan = 2>%s</th><th>%s</th></tr>',
 				Shop::t('Specification'), 
 				Shop::t('Value'), 
 				Shop::t('Price adjustion'),
-				Shop::t('Weight adjustion'),
 				Shop::t('Position'));
 
 
@@ -170,8 +108,6 @@ if(Shop::module()->rteadapter !== false)
 			$i++;
 		}
 
-		$max = $i+5;
-		for(;$i < $max;$i++) 
 			echo renderVariation(null, $i); 
  ?>
 	</table>	
@@ -184,10 +120,7 @@ if(Shop::module()->rteadapter !== false)
 
 				</fieldset>
 
-				<?php } else
-				printf('<div class="hint">%s</div>', Shop::t(
-							'You can set product variations after you created the product')); 
-						?>
+<?php } ?>
 
 
 				<div class="row buttons">

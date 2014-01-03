@@ -1,15 +1,15 @@
 <?php
 $this->breadcrumbs=array(
-	Shop::t('Product Specifications')=>array('index'),
-	Shop::t('Create'),
+	'Product Specifications'=>array('index'),
+	'Create',
 );
 
 $this->menu=array(
-		array('label'=>Shop::t('Manage Product specifications'),
-			'url'=>array('admin')),
-		);
+	array('label'=>'List ProductSpecification', 'url'=>array('index')),
+	array('label'=>'Manage ProductSpecification', 'url'=>array('admin')),
+);
 ?>
 
-<h2><?php echo Shop::t('Create Product specification'); ?></h2>
+<h1>Create ProductSpecification</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

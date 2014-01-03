@@ -1,20 +1,5 @@
 Changelog for Yii User Management Module (Yum) 
 
-0.9 wip:
-
-- ENH: integrated EPasswordGenerator
-(https://github.com/ibrarturi/EPasswordGenerator)
-- ENH: Integrated pStrength jquery widget
-- ENH: uses CPasswordHelper of yii 1.1.14. This release of yii is now 
-- mandatory.
-- ENH: added hybridauth support - see docs/hybridauth.txt
-- ENH: added captchaAfterUnsuccessfulLogins (default to 3)
-- ENH: overhauled profile management
-
-New in 0.8 final release:
-
-- Added Avatar Management
-- removed Yum::route
 - membership: downgrading support
 - membership: user can chooses if he want to subscribe to his membership
 - yumsettings & yumtextsettings are removed. To adjust the strings for your
